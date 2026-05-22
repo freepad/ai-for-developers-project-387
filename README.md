@@ -2,3 +2,4 @@
 [![Actions Status](https://github.com/freepad/ai-for-developers-project-386/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/freepad/ai-for-developers-project-386/actions)
 
 * [Описание](./docs/about.md)
+* [Доменные сущности](./docs/domain.md)
