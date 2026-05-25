@@ -46,3 +46,5 @@ Thumbs.db
 # Default TypeSpec output
 tsp-output/
 dist/
+
+.playwright-mcp

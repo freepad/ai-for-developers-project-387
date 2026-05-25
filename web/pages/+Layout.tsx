@@ -1,77 +1,36 @@
 // https://vike.dev/Layout
 
-import "./Layout.css";
+import "../src/styles/globals.css";
 
 import type { JSX } from "solid-js";
-import logoUrl from "../assets/logo.svg";
 import { Link } from "../components/Link";
+import { Toaster } from "../src/components/ui/toast";
 
 export default function Layout(props: { children?: JSX.Element }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        "max-width": "900px",
-        margin: "auto",
-      }}
-    >
-      <Sidebar>
-        <Logo />
-        <Link href="/">Welcome</Link>
-        <Link href="/todo">Todo</Link>
-        <Link href="/star-wars">Data Fetching</Link>
-      </Sidebar>
-      <Content>{props.children}</Content>
-    </div>
-  );
-}
-
-function Sidebar(props: { children: JSX.Element }) {
-  return (
-    <div
-      id="sidebar"
-      style={{
-        padding: "20px",
-        "flex-shrink": 0,
-        display: "flex",
-        "flex-direction": "column",
-        "line-height": "1.8em",
-        "border-right": "2px solid #eee",
-      }}
-    >
-      {props.children}
-    </div>
-  );
-}
-
-function Content(props: { children: JSX.Element }) {
-  return (
-    <div id="page-container">
-      <div
-        id="page-content"
-        style={{
-          padding: "20px",
-          "padding-bottom": "50px",
-          "min-height": "100vh",
-        }}
-      >
+    <div class="min-h-screen bg-background text-foreground">
+      <header class="border-b bg-card px-4 py-3">
+        <div class="mx-auto flex max-w-5xl items-center justify-between">
+          <a href="/" class="text-lg font-semibold tracking-tight">
+            Calendar App
+          </a>
+          <nav class="flex items-center gap-4 text-sm font-medium">
+            <Link href="/" class="hover:text-primary transition-colors">
+              Записаться
+            </Link>
+            <Link href="/admin/event-types" class="hover:text-primary transition-colors">
+              Управление
+            </Link>
+            <Link href="/admin/bookings" class="hover:text-primary transition-colors">
+              Бронирования
+            </Link>
+          </nav>
+        </div>
+      </header>
+      <main class="mx-auto max-w-5xl px-4 py-6">
         {props.children}
-      </div>
-    </div>
-  );
-}
-
-function Logo() {
-  return (
-    <div
-      style={{
-        "margin-top": "20px",
-        "margin-bottom": "10px",
-      }}
-    >
-      <a href="/">
-        <img src={logoUrl} height={64} width={64} alt="logo" />
-      </a>
+      </main>
+      <Toaster />
     </div>
   );
 }

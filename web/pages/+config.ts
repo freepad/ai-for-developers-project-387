@@ -6,8 +6,8 @@ import vikeSolid from "vike-solid/config";
 
 const config: Config = {
   // https://vike.dev/head-tags
-  title: "My Vike App",
-  description: "Demo showcasing Vike",
+  title: "Calendar App",
+  description: "Calendar booking application",
 
   extends: [vikeSolid],
 };

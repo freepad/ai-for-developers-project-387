@@ -6,18 +6,20 @@
   "dependencies": {
     "@typespec/compiler": "^1.12.0",
     "@typespec/http": "^1.12.0",
-    "@typespec/rest": "^0.82.0",
+    "@typespec/http-client-js": "^0.14.1",
+    "@typespec/http-server-js": "^0.58.0-alpha.26",
     "@typespec/openapi": "^1.12.0",
     "@typespec/openapi3": "^1.12.0",
-    "@typespec/http-client-js": "^0.14.1",
-    "@typespec/http-server-js": "^0.58.0-alpha.26"
+    "@typespec/rest": "^0.82.0"
   },
   "scripts": {
     "tsp:check": "tsp compile main.tsp --no-emit",
     "tsp:compile:openapi": "tsp compile main.tsp --emit @typespec/openapi3 --output-dir .",
-    "lint:tsc": "tsc --noEmit"
+    "lint:tsc": "tsc --noEmit",
+    "mock": "prism mock -d -p 4010 schema/openapi.yaml"
   },
   "devDependencies": {
+    "@stoplight/prism-cli": "^5.15.10",
     "typescript": "^5.3.0"
   },
   "packageManager": "npm@11.15.0+sha512.fa4d2d93b9519e93143e70bb913b94ff2ad5fe69c5a0f84943be557cbb59e9fc1bcce55768fb1313f225f4f9f50c78b8f366f2332aa41effd7b10efa98d8d72f"
