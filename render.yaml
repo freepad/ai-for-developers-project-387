@@ -1,0 +1,17 @@
+databases:
+  - name: h-calendar-db
+    plan: free
+
+services:
+  - type: web
+    name: h-calendar
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: h-calendar-db
+          property: connectionString
