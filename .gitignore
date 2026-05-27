@@ -47,4 +47,8 @@ Thumbs.db
 tsp-output/
 dist/
 
+# SQLite databases
+*.db
+*.db-journal
+
 .playwright-mcp

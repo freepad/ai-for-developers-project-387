@@ -12,26 +12,34 @@ using Calendar.Domain.Common;
 @server("http://localhost:3000", "Development server")
 namespace Calendar.API;
 
-// ─── Input models ──────────────────────────────────────────────
+model NotFoundResponse {
+  code: int32;
+  message: string;
+}
+
+model ConflictResponse {
+  code: int32;
+  message: string;
+}
 
 model EventTypeCreateInput {
   name: string;
   description?: string;
-    @minValue(1)
-    @maxValue(120)
-    durationMinutes: int32;
-  }
+  @minValue(1)
+  @maxValue(120)
+  durationMinutes: int32;
+}
 
-  @example(#{name: "Консультация", description: "Индивидуальная консультация 30 минут", durationMinutes: 30})
-  model EventTypeCreateInputExample is EventTypeCreateInput;
+@example(#{name: "Консультация", description: "Индивидуальная консультация 30 минут", durationMinutes: 30})
+model EventTypeCreateInputExample is EventTypeCreateInput;
 
-  model EventTypeUpdateInput {
-    name?: string;
-    description?: string;
-    @minValue(1)
-    @maxValue(120)
-    durationMinutes?: int32;
-  }
+model EventTypeUpdateInput {
+  name?: string;
+  description?: string;
+  @minValue(1)
+  @maxValue(120)
+  durationMinutes?: int32;
+}
 
 @example(#{name: "Консультация (обновлённая)", durationMinutes: 45})
 model EventTypeUpdateInputExample is EventTypeUpdateInput;
@@ -69,7 +77,13 @@ interface EventTypes {
   @get list(): EventType[];
 
   @route("{id}")
-  @get read(@path id: UUID): EventType | NotFoundResponse;
+  @get read(@path id: UUID): {
+    @statusCode ok: 200;
+    @body eventType: EventType;
+  } | {
+    @statusCode notFound: 404;
+    @body error: NotFoundResponse;
+  };
 }
 
 @route("/api/event-types/{eventTypeId}/slots")
@@ -85,7 +99,13 @@ interface Slots {
 @route("/api/bookings")
 @tag("Bookings")
 interface Bookings {
-  @post create(@body input: BookingCreateInput): Booking | ConflictResponse;
+  @post create(@body input: BookingCreateInput): {
+    @statusCode ok: 200;
+    @body booking: Booking;
+  } | {
+    @statusCode conflict: 409;
+    @body error: ConflictResponse;
+  };
   @get list(): Booking[];
 }
 
@@ -100,8 +120,17 @@ interface OwnerOps {
 @route("/api/admin/event-types")
 @tag("AdminEventTypes")
 interface AdminEventTypes {
-  @post create(@body input: EventTypeCreateInput): EventType | CreatedResponse;
+  @post create(@body input: EventTypeCreateInput): EventType;
 
   @route("{id}")
-  @patch update(@path id: UUID, @body input: EventTypeUpdateInput): EventType | NotFoundResponse;
+  @patch update(
+    @path id: UUID,
+    @body input: EventTypeUpdateInput
+  ): {
+    @statusCode ok: 200;
+    @body eventType: EventType;
+  } | {
+    @statusCode notFound: 404;
+    @body error: NotFoundResponse;
+  };
 }

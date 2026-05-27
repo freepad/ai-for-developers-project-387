@@ -20,8 +20,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Calendar.Domain.EventType'
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
       tags:
         - AdminEventTypes
       requestBody:
@@ -48,6 +46,10 @@ paths:
                 $ref: '#/components/schemas/Calendar.Domain.EventType'
         '404':
           description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
       tags:
         - AdminEventTypes
       requestBody:
@@ -69,6 +71,10 @@ paths:
                 $ref: '#/components/schemas/Calendar.Domain.Booking'
         '409':
           description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
       tags:
         - Bookings
       requestBody:
@@ -156,6 +162,10 @@ paths:
                 $ref: '#/components/schemas/Calendar.Domain.EventType'
         '404':
           description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
       tags:
         - EventTypes
   /api/owner:
@@ -315,6 +325,17 @@ components:
           startAt: '2025-06-01T10:00:00Z'
           endAt: '2025-06-01T10:30:00Z'
           status: free
+    ConflictResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
     ErrorResponse:
       type: object
       required:
@@ -401,6 +422,17 @@ components:
       examples:
         - name: Консультация (обновлённая)
           durationMinutes: 45
+    NotFoundResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
 servers:
   - url: http://localhost:3000
     description: Development server

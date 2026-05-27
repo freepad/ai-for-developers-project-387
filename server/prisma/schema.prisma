@@ -1,0 +1,54 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Owner {
+  id         String      @id @default(uuid())
+  name       String
+  email      String?
+  eventTypes EventType[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model EventType {
+  id              String    @id @default(uuid())
+  name            String
+  description     String?
+  durationMinutes Int
+  ownerId         String
+  owner           Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  slots           Slot[]
+  bookings        Booking[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Slot {
+  id           String    @id @default(uuid())
+  eventTypeId  String
+  eventType   EventType @relation(fields: [eventTypeId], references: [id], onDelete: Cascade)
+  startAt     DateTime
+  endAt       DateTime
+  status      String    @default("free")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([eventTypeId, startAt, endAt])
+}
+
+model Booking {
+  id            String   @id @default(uuid())
+  eventTypeId   String
+  eventType    EventType @relation(fields: [eventTypeId], references: [id], onDelete: Cascade)
+  slotStart    DateTime
+  slotEnd      DateTime
+  guestName    String?
+  guestContact String?
+  createdAt    DateTime @default(now())
+}
