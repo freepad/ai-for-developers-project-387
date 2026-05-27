@@ -8,6 +8,7 @@ tags:
   - name: Bookings
   - name: Owner
   - name: AdminEventTypes
+  - name: AdminSlots
 paths:
   /api/admin/event-types:
     post:
@@ -28,6 +29,38 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EventTypeCreateInput'
+  /api/admin/event-types/{eventTypeId}/slots:
+    post:
+      operationId: AdminSlots_generate
+      parameters:
+        - name: eventTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Calendar.Domain.Slot'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - AdminSlots
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotGenerateInput'
   /api/admin/event-types/{id}:
     patch:
       operationId: AdminEventTypes_update
@@ -433,6 +466,19 @@ components:
           format: int32
         message:
           type: string
+    SlotGenerateInput:
+      type: object
+      required:
+        - from
+        - to
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+        slotDurationMinutes:
+          type: integer
+          format: int32
 servers:
   - url: http://localhost:3000
     description: Development server

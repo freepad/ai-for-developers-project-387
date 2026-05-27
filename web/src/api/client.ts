@@ -6,6 +6,7 @@ import type {
   BookingCreateInput,
   EventTypeCreateInput,
   EventTypeUpdateInput,
+  SlotGenerateInput,
 } from "./types";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4010";
@@ -51,4 +52,11 @@ export const api = {
     fetchJson<EventType>("/api/admin/event-types", { method: "POST", body: JSON.stringify(input) }),
   updateEventType: (id: string, input: EventTypeUpdateInput) =>
     fetchJson<EventType>(`/api/admin/event-types/${id}`, { method: "PATCH", body: JSON.stringify(input) }),
+
+  // Admin Slots
+  generateSlots: (eventTypeId: string, input: SlotGenerateInput) =>
+    fetchJson<Slot[]>(`/api/admin/event-types/${eventTypeId}/slots`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
 };

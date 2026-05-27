@@ -51,3 +51,9 @@ export interface EventTypeUpdateInput {
   description?: string;
   durationMinutes?: number;
 }
+
+export interface SlotGenerateInput {
+  from: string;
+  to: string;
+  slotDurationMinutes?: number;
+}

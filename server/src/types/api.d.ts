@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/event-types/{eventTypeId}/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminSlots_generate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/event-types/{id}": {
         parameters: {
             query?: never;
@@ -272,6 +288,12 @@ export interface components {
             code: number;
             message: string;
         };
+        SlotGenerateInput: {
+            from: string;
+            to: string;
+            /** Format: int32 */
+            slotDurationMinutes?: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -301,6 +323,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Calendar.Domain.EventType"];
+                };
+            };
+        };
+    };
+    AdminSlots_generate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                eventTypeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotGenerateInput"];
+            };
+        };
+        responses: {
+            /** @description The request has succeeded. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Calendar.Domain.Slot"][];
+                };
+            };
+            /** @description The server cannot find the requested resource. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFoundResponse"];
                 };
             };
         };

@@ -69,6 +69,12 @@ model ErrorResponse {
 @example(#{code: 404, message: "Resource not found"})
 model ErrorResponseExample is ErrorResponse;
 
+model SlotGenerateInput {
+  from: DateTime;
+  to: DateTime;
+  slotDurationMinutes?: int32;
+}
+
 // ─── Public endpoints (guest) ─────────────────────────────────
 
 @route("/api/event-types")
@@ -129,6 +135,21 @@ interface AdminEventTypes {
   ): {
     @statusCode ok: 200;
     @body eventType: EventType;
+  } | {
+    @statusCode notFound: 404;
+    @body error: NotFoundResponse;
+  };
+}
+
+@route("/api/admin/event-types/{eventTypeId}/slots")
+@tag("AdminSlots")
+interface AdminSlots {
+  @post generate(
+    @path eventTypeId: UUID,
+    @body input: SlotGenerateInput
+  ): {
+    @statusCode ok: 200;
+    @body slots: Slot[];
   } | {
     @statusCode notFound: 404;
     @body error: NotFoundResponse;

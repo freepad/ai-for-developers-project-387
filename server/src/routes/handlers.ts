@@ -151,6 +151,78 @@ export const handlers: Record<string, Handler> = {
 
     return formatEventType(eventType);
   },
+
+  AdminSlots_generate: async (request, reply) => {
+    const { eventTypeId } = request.params as { eventTypeId: string };
+    const { from, to, slotDurationMinutes } =
+      request.body as operations["AdminSlots_generate"]["requestBody"]["content"]["application/json"];
+
+    const eventType = await request.server.prisma.eventType.findUnique({
+      where: { id: eventTypeId },
+    });
+    if (!eventType) {
+      reply.code(404);
+      return { code: 404, message: "EventType not found" };
+    }
+
+    const duration = slotDurationMinutes ?? eventType.durationMinutes;
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+
+    const slotsToCreate: { startAt: Date; endAt: Date }[] = [];
+    const current = new Date(startDate);
+    current.setHours(9, 0, 0, 0);
+
+    const endOfDay = new Date(current);
+    endOfDay.setHours(18, 0, 0, 0);
+
+    while (current < endDate) {
+      const slotEnd = new Date(current.getTime() + duration * 60 * 1000);
+      if (slotEnd <= endOfDay) {
+        slotsToCreate.push({
+          startAt: new Date(current),
+          endAt: slotEnd,
+        });
+        current.setTime(current.getTime() + duration * 60 * 1000);
+      } else {
+        current.setDate(current.getDate() + 1);
+        current.setHours(9, 0, 0, 0);
+        endOfDay.setDate(current.getDate());
+        endOfDay.setHours(18, 0, 0, 0);
+      }
+    }
+
+    for (const slot of slotsToCreate) {
+      await request.server.prisma.slot.upsert({
+        where: {
+          eventTypeId_startAt_endAt: {
+            eventTypeId,
+            startAt: slot.startAt,
+            endAt: slot.endAt,
+          },
+        },
+        update: {},
+        create: {
+          id: crypto.randomUUID(),
+          eventTypeId,
+          startAt: slot.startAt,
+          endAt: slot.endAt,
+          status: "free",
+        },
+      });
+    }
+
+    const slots = await request.server.prisma.slot.findMany({
+      where: {
+        eventTypeId,
+        startAt: { gte: startDate },
+        endAt: { lte: endDate },
+      },
+      orderBy: { startAt: "asc" },
+    });
+
+    return slots.map(formatSlot);
+  },
 };
 
 function formatEventType(et: {
