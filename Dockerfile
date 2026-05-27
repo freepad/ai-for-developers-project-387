@@ -28,6 +28,7 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/schema /schema
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY server/prisma ./prisma
 
