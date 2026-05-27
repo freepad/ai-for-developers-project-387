@@ -45,14 +45,12 @@ COPY --from=backend-builder /app/schema /schema
 COPY --from=backend-builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY server/prisma ./prisma
 
-COPY --from=frontend-builder /app/dist/client /usr/share/nginx/html
+COPY --from=frontend-builder /app/dist /web-dist
 
-COPY index.html /usr/share/nginx/html/index.html
+COPY ssr-server.mjs ./
 
-RUN chmod -R 755 /usr/share/nginx/html
-
-RUN printf 'server {\n    listen 80;\n    server_name _;\n    root /usr/share/nginx/html;\n    index index.html;\n\n    location /api/ {\n        proxy_pass http://localhost:3000;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade $http_upgrade;\n        proxy_set_header Connection '"'"'upgrade'"'"';\n        proxy_set_header Host $host;\n        proxy_cache_bypass $http_upgrade;\n    }\n\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n}\n' > /etc/nginx/http.d/default.conf
+RUN printf 'server {\n    listen 80;\n    server_name _;\n\n    location /api/ {\n        proxy_pass http://localhost:3000;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade $http_upgrade;\n        proxy_set_header Connection '"'"'upgrade'"'"';\n        proxy_set_header Host $host;\n        proxy_cache_bypass $http_upgrade;\n    }\n\n    location / {\n        proxy_pass http://localhost:3001;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade $http_upgrade;\n        proxy_set_header Connection '"'"'upgrade'"'"';\n        proxy_set_header Host $host;\n        proxy_cache_bypass $http_upgrade;\n    }\n}\n' > /etc/nginx/http.d/default.conf
 
 EXPOSE 80
 
-CMD ["sh", "-c", "node dist/index.js & nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "node dist/index.js & node ssr-server.mjs & nginx -g 'daemon off;'"]
