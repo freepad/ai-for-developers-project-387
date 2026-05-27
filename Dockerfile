@@ -47,47 +47,11 @@ COPY server/prisma ./prisma
 
 COPY --from=frontend-builder /app/dist/client /usr/share/nginx/html
 
-RUN ENTRY_FILE=$(ls /usr/share/nginx/html/assets/entries/entry-client-routing.*.js 2>/dev/null | head -1) && \
-    ENTRY_NAME=$(basename "$ENTRY_FILE") && \
-    cat > /usr/share/nginx/html/index.html << EOF
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendar App</title>
-  <link rel="stylesheet" href="/assets/static/src_styles_globals-8da7f7cb.BLjhguyl.css">
-</head>
-<body>
-  <div id="app"></div>
-  <script type="module" src="/assets/entries/${ENTRY_NAME}"></script>
-</body>
-</html>
-EOF
+COPY index.html /usr/share/nginx/html/index.html
 
 RUN chmod -R 755 /usr/share/nginx/html
 
-RUN cat > /etc/nginx/http.d/default.conf << 'EOF'
-server {
-    listen 80;
-    server_name _;
-    root /usr/share/nginx/html;
-    index index.html;
-
-    location /api/ {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-EOF
+RUN printf 'server {\n    listen 80;\n    server_name _;\n    root /usr/share/nginx/html;\n    index index.html;\n\n    location /api/ {\n        proxy_pass http://localhost:3000;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade $http_upgrade;\n        proxy_set_header Connection '"'"'upgrade'"'"';\n        proxy_set_header Host $host;\n        proxy_cache_bypass $http_upgrade;\n    }\n\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n}\n' > /etc/nginx/http.d/default.conf
 
 EXPOSE 80
 
