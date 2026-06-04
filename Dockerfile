@@ -46,6 +46,9 @@ COPY --from=backend-builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY server/prisma ./prisma
 
 COPY --from=frontend-builder /app/dist /web-dist
+COPY --from=frontend-deps /app/node_modules ./web-node-modules
+
+ENV NODE_PATH=/app/web-node-modules
 
 COPY ssr-server.mjs ./
 
