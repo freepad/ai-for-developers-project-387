@@ -42,15 +42,12 @@ const server = createServer(async (req, res) => {
 
   try {
     const pageContext = await renderPage({ urlOriginal: url })
-    const { body, statusCode, contentType } = pageContext
+    const httpResponse = pageContext.httpResponse
+    const { statusCode, headers } = httpResponse
 
-    res.writeHead(statusCode, { 'Content-Type': contentType || 'text/html' })
+    res.writeHead(statusCode, headers)
 
-    if (body && typeof body.pipe === 'function') {
-      body.pipe(res)
-    } else {
-      res.end(body)
-    }
+    httpResponse.pipe(res)
   } catch (err) {
     console.error('SSR error:', err)
     res.writeHead(500)

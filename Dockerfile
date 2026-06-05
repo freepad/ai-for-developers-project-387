@@ -54,4 +54,4 @@ RUN printf 'server {\n    listen 80;\n    server_name _;\n\n    location /api/ {
 
 EXPOSE 80
 
-CMD ["sh", "-c", "node dist/index.js & node ssr-server.mjs & nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "node ssr-server.mjs & sleep 2 && node dist/index.js & nginx -g 'daemon off;'"]

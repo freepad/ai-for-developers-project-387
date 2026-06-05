@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import YAML from "yaml";
 
 import prismaPlugin from "./plugins/prisma.js";
+import ssrProxy from "./plugins/ssr-proxy.js";
 import { handlers } from "./routes/handlers.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -36,6 +37,8 @@ export async function buildApp() {
     specification: specContent,
     serviceHandlers: handlers,
   });
+
+  await app.register(ssrProxy);
 
   return app;
 }
